@@ -1,0 +1,2537 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Voucher</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Login Page -->
+    <div id="loginPage" class="flex items-center justify-center min-h-screen">
+        <div class="bg-white p-8 rounded-lg shadow-lg w-96">
+            <h1 class="text-2xl font-bold text-center mb-6">🎫 UMKM TAMUKU</h1>
+            <div class="space-y-4">
+                <button onclick="showCustomer()" class="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700">
+                    Customer
+                </button>
+                <button onclick="showOffice()" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700">
+                    Office
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Office Login Page -->
+    <div id="officePage" class="hidden flex items-center justify-center min-h-screen">
+        <div class="bg-white p-8 rounded-lg shadow-lg w-96">
+            <h2 class="text-xl font-bold text-center mb-6">🏢 Office Login</h2>
+            <div class="space-y-4">
+                <input type="text" id="officeUsername" placeholder="Username" class="w-full p-3 border rounded-lg">
+                <input type="password" id="officePassword" placeholder="Password" class="w-full p-3 border rounded-lg">
+                <button onclick="officeLogin()" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700">
+                    Login
+                </button>
+                <button onclick="backToHome()" class="w-full mt-4 text-gray-600 hover:text-gray-800 border border-gray-300 py-3 rounded-lg">
+                    Kembali
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Role Selection Page -->
+    <div id="roleSelectionPage" class="hidden flex items-center justify-center min-h-screen">
+        <div class="bg-white p-8 rounded-lg shadow-lg w-96">
+            <h2 class="text-xl font-bold text-center mb-6">🏢 Pilih Role</h2>
+            <p class="text-center mb-4 text-gray-600">Selamat datang, <span id="loggedInUser" class="font-bold"></span>!</p>
+            <div class="space-y-4" id="roleButtons">
+                <button onclick="selectRole('kasir')" class="w-full bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700">
+                    Kasir Dashboard
+                </button>
+                <button onclick="selectRole('admin')" id="adminButton" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700">
+                    Admin Dashboard
+                </button>
+                <button onclick="selectRole('server')" id="serverButton" class="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 hidden">
+                    Server Dashboard
+                </button>
+                <button onclick="logoutToMain()" class="w-full mt-4 text-gray-600 hover:text-gray-800 border border-gray-300 py-3 rounded-lg">
+                    Logout
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="adminPage" class="hidden p-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl font-bold">Admin Dashboard</h1>
+                <button onclick="logout()" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Logout</button>
+            </div>
+
+            <!-- License Status in Admin -->
+            <div class="bg-white p-4 rounded-lg shadow mb-6">
+                <h3 class="font-bold mb-3">Status Lisensi Sistem</h3>
+                <div id="adminLicenseStatus" class="mb-4"></div>
+                <div id="adminLicenseCountdown" class="mb-4"></div>
+                
+                <!-- License Details Table for Admin -->
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h4 class="font-medium mb-3">Detail Lisensi</h4>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="border-b border-gray-300">
+                                    <th class="text-left p-2 font-medium">Tanggal Berakhir</th>
+                                    <th class="text-left p-2 font-medium">Jam Berakhir</th>
+                                    <th class="text-left p-2 font-medium">Sisa Hari</th>
+                                    <th class="text-left p-2 font-medium">Sisa Jam</th>
+                                    <th class="text-left p-2 font-medium">Sisa Menit</th>
+                                    <th class="text-left p-2 font-medium">Sisa Detik</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr id="adminLicenseDetailsRow" class="border-b border-gray-200">
+                                    <td class="p-2" id="adminLicenseDate">-</td>
+                                    <td class="p-2" id="adminLicenseTime">-</td>
+                                    <td class="p-2" id="adminLicenseDays">-</td>
+                                    <td class="p-2" id="adminLicenseHours">-</td>
+                                    <td class="p-2" id="adminLicenseMinutes">-</td>
+                                    <td class="p-2" id="adminLicenseSeconds">-</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="bg-yellow-50 border border-yellow-200 rounded p-2 mt-3">
+                        <p class="text-yellow-800 text-xs">
+                            ℹ️ <strong>Info:</strong> Untuk mengatur atau memperpanjang lisensi, gunakan <strong>Server Dashboard</strong>. Hubungi <strong>085175010097</strong> untuk perpanjangan lisensi.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Phone -->
+            <div class="bg-white p-4 rounded-lg shadow mb-6">
+                <h3 class="font-bold mb-3">Tambah Nomor</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <input type="tel" id="phoneInput" placeholder="08123456789" class="p-2 border rounded">
+                    <input type="text" id="nameInput" placeholder="Nama" class="p-2 border rounded">
+                    <input type="number" id="peopleCountInput" placeholder="Jumlah Orang" min="1" max="100" value="1" class="p-2 border rounded">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Masa Berlaku Voucher:</label>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                        <input type="date" id="expiryDate" class="p-2 border rounded text-sm">
+                        <input type="time" id="expiryTime" step="1" class="p-2 border rounded text-sm">
+                        <button onclick="setDefaultExpiry()" class="bg-gray-500 text-white px-3 py-2 rounded text-sm hover:bg-gray-600">
+                            Default 24 Jam
+                        </button>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">Pilih tanggal dan waktu kapan voucher akan kedaluwarsa</p>
+                </div>
+                <button onclick="addPhone()" class="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Tambah Customer</button>
+            </div>
+
+
+
+            <!-- Phone List -->
+            <div class="bg-white p-4 rounded-lg shadow">
+                <h3 class="font-bold mb-3">Data Nomor (<span id="phoneCount">0</span>)</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b">
+                                <th class="text-left p-2">No</th>
+                                <th class="text-left p-2">Telepon</th>
+                                <th class="text-left p-2">Nama</th>
+                                <th class="text-left p-2">Jumlah Orang</th>
+                                <th class="text-left p-2">Voucher</th>
+                                <th class="text-left p-2">Berlaku Sampai</th>
+                                <th class="text-left p-2">Dibuat Oleh</th>
+                                <th class="text-left p-2">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="phoneTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kasir Dashboard -->
+    <div id="kasirPage" class="hidden p-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl font-bold">Kasir Dashboard</h1>
+                <button onclick="logout()" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Logout</button>
+            </div>
+
+            <!-- Tab Navigation -->
+            <div class="mb-6">
+                <div class="border-b border-gray-200">
+                    <nav class="-mb-px flex space-x-8" id="kasirTabs">
+                        <button onclick="showKasirTab('today')" id="todayTab" class="py-2 px-1 border-b-2 border-purple-500 font-medium text-sm text-purple-600">
+                            Hari Ini
+                        </button>
+                        <button onclick="showKasirTab('redeemed')" id="redeemedTab" class="py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                            Ditukar
+                        </button>
+                        <button onclick="showKasirTab('expired')" id="expiredTab" class="py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                            Kadaluwarsa
+                        </button>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Today's Vouchers -->
+            <div id="todayContent" class="bg-white p-4 rounded-lg shadow">
+                <h3 class="font-bold mb-3">Voucher Hari Ini (<span id="todayCount">0</span>)</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b">
+                                <th class="text-left p-2">No</th>
+                                <th class="text-left p-2">Nama</th>
+                                <th class="text-left p-2">Jumlah Orang</th>
+                                <th class="text-left p-2">Kode Voucher</th>
+                                <th class="text-left p-2">Masa Berlaku</th>
+                                <th class="text-left p-2">Dibuat Oleh</th>
+                                <th class="text-left p-2">Status</th>
+                                <th class="text-left p-2">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="todayTable"></tbody>
+                    </table>
+                </div>
+                <div class="flex justify-end mt-4 space-x-2">
+                    <button onclick="exportToExcel('today')" class="bg-green-600 text-white px-3 py-2 rounded text-sm hover:bg-green-700 flex items-center">
+                        📊 Excel
+                    </button>
+                    <button onclick="exportToCSV('today')" class="bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700 flex items-center">
+                        📄 CSV
+                    </button>
+                    <button onclick="exportToPDF('today')" class="bg-red-600 text-white px-3 py-2 rounded text-sm hover:bg-red-700 flex items-center">
+                        📑 PDF
+                    </button>
+                </div>
+            </div>
+
+            <!-- Redeemed Content -->
+            <div id="redeemedContent" class="hidden bg-white p-4 rounded-lg shadow">
+                <h3 class="font-bold mb-3">Voucher yang Sudah Ditukar (<span id="redeemedCount">0</span>)</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b">
+                                <th class="text-left p-2">No</th>
+                                <th class="text-left p-2">Nama</th>
+                                <th class="text-left p-2">Jumlah Orang</th>
+                                <th class="text-left p-2">Kode Voucher</th>
+                                <th class="text-left p-2">Masa Berlaku</th>
+                                <th class="text-left p-2">Dibuat Oleh</th>
+                                <th class="text-left p-2">Ditukar Oleh</th>
+                                <th class="text-left p-2">Waktu Ditukar</th>
+                            </tr>
+                        </thead>
+                        <tbody id="redeemedTable"></tbody>
+                    </table>
+                </div>
+                <div class="flex justify-end mt-4 space-x-2">
+                    <button onclick="exportToExcel('redeemed')" class="bg-green-600 text-white px-3 py-2 rounded text-sm hover:bg-green-700 flex items-center">
+                        📊 Excel
+                    </button>
+                    <button onclick="exportToCSV('redeemed')" class="bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700 flex items-center">
+                        📄 CSV
+                    </button>
+                    <button onclick="exportToPDF('redeemed')" class="bg-red-600 text-white px-3 py-2 rounded text-sm hover:bg-red-700 flex items-center">
+                        📑 PDF
+                    </button>
+                </div>
+            </div>
+
+            <!-- Expired Content -->
+            <div id="expiredContent" class="hidden bg-white p-4 rounded-lg shadow">
+                <h3 class="font-bold mb-3">Voucher Kadaluwarsa (<span id="expiredCount">0</span>)</h3>
+                <p class="text-sm text-gray-600 mb-3">Voucher yang sudah kadaluwarsa disimpan selama 30 hari setelah tanggal kedaluwarsa</p>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b">
+                                <th class="text-left p-2">No</th>
+                                <th class="text-left p-2">Nama</th>
+                                <th class="text-left p-2">Jumlah Orang</th>
+                                <th class="text-left p-2">Kode Voucher</th>
+                                <th class="text-left p-2">Tanggal Kadaluwarsa</th>
+                                <th class="text-left p-2">Dibuat Oleh</th>
+                                <th class="text-left p-2">Hari Berlalu</th>
+                                <th class="text-left p-2">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expiredTable"></tbody>
+                    </table>
+                </div>
+                <div class="flex justify-end mt-4 space-x-2">
+                    <button onclick="exportToExcel('expired')" class="bg-green-600 text-white px-3 py-2 rounded text-sm hover:bg-green-700 flex items-center">
+                        📊 Excel
+                    </button>
+                    <button onclick="exportToCSV('expired')" class="bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700 flex items-center">
+                        📄 CSV
+                    </button>
+                    <button onclick="exportToPDF('expired')" class="bg-red-600 text-white px-3 py-2 rounded text-sm hover:bg-red-700 flex items-center">
+                        📑 PDF
+                    </button>
+                </div>
+            </div>
+
+            <!-- Historical Content (will be added dynamically) -->
+            <div id="historicalContent" class="hidden bg-white p-4 rounded-lg shadow">
+                <h3 class="font-bold mb-3">Rekap Voucher</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b">
+                                <th class="text-left p-2">No</th>
+                                <th class="text-left p-2">Nama</th>
+                                <th class="text-left p-2">Jumlah Orang</th>
+                                <th class="text-left p-2">Kode Voucher</th>
+                                <th class="text-left p-2">Masa Berlaku</th>
+                                <th class="text-left p-2">Dibuat Oleh</th>
+                                <th class="text-left p-2">Ditukar Oleh</th>
+                                <th class="text-left p-2">Status</th>
+                                <th class="text-left p-2">Waktu Redeem</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historicalTable"></tbody>
+                    </table>
+                </div>
+                <div class="flex justify-end mt-4 space-x-2">
+                    <button onclick="exportToExcel('historical')" class="bg-green-600 text-white px-3 py-2 rounded text-sm hover:bg-green-700 flex items-center">
+                        📊 Excel
+                    </button>
+                    <button onclick="exportToCSV('historical')" class="bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700 flex items-center">
+                        📄 CSV
+                    </button>
+                    <button onclick="exportToPDF('historical')" class="bg-red-600 text-white px-3 py-2 rounded text-sm hover:bg-red-700 flex items-center">
+                        📑 PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Server Dashboard -->
+    <div id="serverPage" class="hidden p-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-2xl font-bold">Server Dashboard</h1>
+                <button onclick="logout()" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Logout</button>
+            </div>
+
+            <!-- License Status -->
+            <div class="bg-white p-4 rounded-lg shadow mb-6">
+                <h3 class="font-bold mb-3">Status Lisensi</h3>
+                <div id="licenseStatus" class="mb-4"></div>
+                <div id="licenseCountdown" class="mb-4"></div>
+                
+                <!-- License Details Table -->
+                <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                    <h4 class="font-medium mb-3">Detail Lisensi</h4>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="border-b border-gray-300">
+                                    <th class="text-left p-2 font-medium">Tanggal Berakhir</th>
+                                    <th class="text-left p-2 font-medium">Jam Berakhir</th>
+                                    <th class="text-left p-2 font-medium">Sisa Hari</th>
+                                    <th class="text-left p-2 font-medium">Sisa Jam</th>
+                                    <th class="text-left p-2 font-medium">Sisa Menit</th>
+                                    <th class="text-left p-2 font-medium">Sisa Detik</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr id="licenseDetailsRow" class="border-b border-gray-200">
+                                    <td class="p-2" id="licenseDate">-</td>
+                                    <td class="p-2" id="licenseTime">-</td>
+                                    <td class="p-2" id="licenseDays">-</td>
+                                    <td class="p-2" id="licenseHours">-</td>
+                                    <td class="p-2" id="licenseMinutes">-</td>
+                                    <td class="p-2" id="licenseSeconds">-</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal Berakhir Lisensi:</label>
+                        <input type="date" id="licenseExpiry" class="w-full p-2 border rounded">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Jam Berakhir Lisensi:</label>
+                        <input type="time" id="licenseExpiryTime" step="1" class="w-full p-2 border rounded">
+                    </div>
+                    <div class="flex items-end">
+                        <button onclick="updateLicense()" class="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                            Update Lisensi
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Management -->
+            <div class="bg-white p-4 rounded-lg shadow">
+                <h3 class="font-bold mb-3">Manajemen User</h3>
+                
+                <!-- Add New User -->
+                <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                    <h4 class="font-medium mb-3">Tambah User Baru</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <input type="text" id="newUsername" placeholder="Username" class="p-2 border rounded">
+                        <input type="password" id="newUserPassword" placeholder="Password" class="p-2 border rounded">
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <input type="password" id="confirmNewUserPassword" placeholder="Konfirmasi Password" class="p-2 border rounded">
+                        <select id="userAuthority" class="p-2 border rounded">
+                            <option value="">Pilih Otoritas User</option>
+                            <option value="kasir">Kasir Saja</option>
+                            <option value="kasir+admin">Kasir + Admin</option>
+                            <option value="kasir+admin+server">Kasir + Admin + Server</option>
+                        </select>
+                    </div>
+                    <button onclick="addUser()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                        Tambah User
+                    </button>
+                </div>
+
+                <!-- User List -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b">
+                                <th class="text-left p-2">No</th>
+                                <th class="text-left p-2">Username</th>
+                                <th class="text-left p-2">Otoritas</th>
+                                <th class="text-left p-2">Tanggal Dibuat</th>
+                                <th class="text-left p-2">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Page -->
+    <div id="customerPage" class="hidden flex items-center justify-center min-h-screen">
+        <div class="bg-white p-8 rounded-lg shadow-lg w-96">
+            <h2 class="text-xl font-bold mb-4 text-center">🎁 Dapatkan Voucher</h2>
+            <input type="tel" id="customerPhone" placeholder="Masukkan nomor telepon Anda" class="w-full p-3 border rounded-lg mb-4">
+            <button onclick="checkVoucher()" class="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 mb-4">
+                Cek Voucher
+            </button>
+            <button onclick="showCustomerHistory()" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 mb-4">
+                📋 Histori Voucher
+            </button>
+            <div id="voucherResult" class="hidden"></div>
+            <div id="historyResult" class="hidden"></div>
+            <button onclick="backToHome()" class="w-full text-gray-600 hover:text-gray-800">Kembali</button>
+        </div>
+    </div>
+
+    <script>
+        let phones = [];
+        let redeemedVouchers = [];
+        let expiredVouchers = [];
+        let historicalData = {};
+        let users = JSON.parse(localStorage.getItem('users')) || [
+            { username: 'admin', password: 'admin', authority: 'kasir+admin+server', createdDate: new Date().toISOString() }
+        ];
+        let currentUser = null;
+        let licenseExpiry = localStorage.getItem('licenseExpiry') || null;
+        let licenseCountdownInterval;
+        let adminLicenseCountdownInterval;
+
+        function showCustomer() {
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('customerPage').classList.remove('hidden');
+        }
+
+        function showOffice() {
+            document.getElementById('loginPage').classList.add('hidden');
+            document.getElementById('officePage').classList.remove('hidden');
+        }
+
+        function officeLogin() {
+            const username = document.getElementById('officeUsername').value.trim();
+            const password = document.getElementById('officePassword').value.trim();
+            
+            if (!username || !password) {
+                alert('Masukkan username dan password!');
+                return;
+            }
+            
+            const user = users.find(u => u.username === username && u.password === password);
+            
+            if (user) {
+                currentUser = user.username;
+                document.getElementById('loggedInUser').textContent = currentUser;
+                
+                // Show/hide buttons based on user authority
+                const authority = user.authority || 'kasir';
+                document.getElementById('adminButton').classList.toggle('hidden', !authority.includes('admin'));
+                document.getElementById('serverButton').classList.toggle('hidden', !authority.includes('server'));
+                
+                document.getElementById('officePage').classList.add('hidden');
+                document.getElementById('roleSelectionPage').classList.remove('hidden');
+                
+                // Clear input fields
+                document.getElementById('officeUsername').value = '';
+                document.getElementById('officePassword').value = '';
+            } else {
+                alert('Username atau password salah!');
+            }
+        }
+
+        function selectRole(role) {
+            // Check user authority
+            const user = users.find(u => u.username === currentUser);
+            if (!user) {
+                alert('User tidak ditemukan!');
+                return;
+            }
+            
+            const authority = user.authority || 'kasir';
+            
+            // Check if user has permission for this role
+            if (role === 'admin' && !authority.includes('admin')) {
+                alert('Anda tidak memiliki akses ke Admin Dashboard!');
+                return;
+            }
+            
+            if (role === 'server' && !authority.includes('server')) {
+                alert('Anda tidak memiliki akses ke Server Dashboard!');
+                return;
+            }
+            
+            // Check license for kasir and admin roles
+            if ((role === 'kasir' || role === 'admin') && !checkLicense()) {
+                showLicenseExpiredPopup();
+                return;
+            }
+            
+            document.getElementById('roleSelectionPage').classList.add('hidden');
+            
+            if (role === 'admin') {
+                document.getElementById('adminPage').classList.remove('hidden');
+                updateTable();
+                updateAdminLicenseStatus();
+            } else if (role === 'kasir') {
+                document.getElementById('kasirPage').classList.remove('hidden');
+                updateKasirTable();
+                updateRedeemedTable();
+                updateExpiredTable();
+                checkDailyReset();
+                checkExpiredVouchers();
+            } else if (role === 'server') {
+                document.getElementById('serverPage').classList.remove('hidden');
+                updateLicenseStatus();
+                loadCurrentLicense();
+                updateUserTable();
+            }
+        }
+
+        function backToHome() {
+            document.querySelectorAll('div[id$="Page"]').forEach(div => div.classList.add('hidden'));
+            document.getElementById('loginPage').classList.remove('hidden');
+            document.getElementById('voucherResult').classList.add('hidden');
+            document.getElementById('historyResult').classList.add('hidden');
+            currentUser = null;
+        }
+
+        function showCustomerHistory() {
+            const phone = document.getElementById('customerPhone').value.trim();
+            const historyDiv = document.getElementById('historyResult');
+            const voucherDiv = document.getElementById('voucherResult');
+            
+            // Hide voucher result when showing history
+            voucherDiv.classList.add('hidden');
+            
+            if (!phone) {
+                alert('Masukkan nomor telepon terlebih dahulu!');
+                return;
+            }
+
+            // Get vouchers for this phone number from last 31 days only
+            let allVouchers = [];
+            const now = new Date();
+            const thirtyOneDaysAgo = new Date(now.getTime() - (31 * 24 * 60 * 60 * 1000));
+            
+            // Current redeemed vouchers (within 31 days)
+            const currentRedeemed = phones.filter(p => {
+                if (p.phone === phone && redeemedVouchers.includes(p.id) && p.redeemTime) {
+                    const redeemDate = new Date(p.redeemTime);
+                    return redeemDate >= thirtyOneDaysAgo;
+                }
+                return false;
+            });
+            allVouchers = allVouchers.concat(currentRedeemed);
+            
+            // Historical vouchers from last 31 days only
+            Object.keys(historicalData).forEach(dateKey => {
+                const dayData = historicalData[dateKey].data || [];
+                const phoneVouchers = dayData.filter(p => {
+                    if (p.phone === phone && p.redeemTime) {
+                        const redeemDate = new Date(p.redeemTime);
+                        return redeemDate >= thirtyOneDaysAgo;
+                    }
+                    return false;
+                });
+                allVouchers = allVouchers.concat(phoneVouchers);
+            });
+            
+            if (allVouchers.length === 0) {
+                historyDiv.innerHTML = `
+                    <div class="bg-gray-100 border border-gray-300 text-gray-700 px-4 py-3 rounded mb-4">
+                        <h4 class="font-bold">📋 Histori Voucher (31 Hari Terakhir)</h4>
+                        <p class="mt-2">Belum ada voucher yang ditukar dalam 31 hari terakhir untuk nomor: <strong>${phone}</strong></p>
+                        <p class="text-sm mt-2 text-gray-600">Silahkan hubungi admin di: <strong>085175010097</strong> jika ada pertanyaan.</p>
+                    </div>
+                `;
+            } else {
+                // Sort by redeem time (newest first)
+                allVouchers.sort((a, b) => new Date(b.redeemTime) - new Date(a.redeemTime));
+                
+                const voucherList = allVouchers.map((voucher, index) => {
+                    const redeemTime = new Date(voucher.redeemTime).toLocaleString('id-ID', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                    });
+                    
+                    const expiry = new Date(voucher.expiry).toLocaleString('id-ID', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                    // Calculate days ago
+                    const redeemDate = new Date(voucher.redeemTime);
+                    const daysAgo = Math.floor((now - redeemDate) / (1000 * 60 * 60 * 24));
+                    const daysAgoText = daysAgo === 0 ? 'Hari ini' : `${daysAgo} hari yang lalu`;
+                    
+                    return `
+                        <div class="bg-white border border-green-200 rounded p-3 mb-3">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="bg-green-500 text-white px-2 py-1 rounded text-xs font-bold">✓ DITUKAR</span>
+                                <span class="text-xs text-blue-600 font-medium">${daysAgoText}</span>
+                            </div>
+                            <p class="font-bold text-green-800 mb-1">🎫 ${voucher.voucher}</p>
+                            <p class="text-sm text-gray-700">Atas nama: <strong>${voucher.name}</strong></p>
+                            <p class="text-sm text-gray-700">Jumlah orang: <strong>${voucher.peopleCount || 1} orang</strong></p>
+                            <p class="text-sm text-gray-600 mt-2">Masa berlaku: ${expiry}</p>
+                            <div class="bg-green-50 border border-green-200 rounded p-2 mt-2">
+                                <p class="text-green-800 text-xs font-medium">📅 Ditukar pada:</p>
+                                <p class="text-green-900 text-sm font-bold">${redeemTime}</p>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                historyDiv.innerHTML = `
+                    <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded mb-4">
+                        <h4 class="font-bold">📋 Histori Voucher (31 Hari Terakhir)</h4>
+                        <p class="text-sm mt-1">Nomor: <strong>${phone}</strong></p>
+                        <p class="text-sm">Total voucher ditukar (31 hari terakhir): <strong>${allVouchers.length}</strong></p>
+                        <div class="mt-4 max-h-96 overflow-y-auto">
+                            ${voucherList}
+                        </div>
+                        <div class="bg-yellow-50 border border-yellow-200 rounded p-2 mt-3">
+                            <p class="text-yellow-800 text-xs">
+                                ℹ️ <strong>Info:</strong> Histori ini menampilkan voucher yang ditukar dalam <strong>31 hari terakhir</strong> di Platinum Lounge. Data lebih dari 31 hari otomatis terhapus.
+                            </p>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            historyDiv.classList.remove('hidden');
+        }
+
+        function checkLicense() {
+            if (!licenseExpiry) {
+                return false;
+            }
+            
+            const now = new Date();
+            const expiry = new Date(licenseExpiry);
+            return now <= expiry;
+        }
+
+        function showLicenseExpiredPopup() {
+            let message = '⚠️ MASA BERLAKU LISENSI HABIS!\n\n';
+            
+            if (!licenseExpiry) {
+                message += 'Sistem belum memiliki lisensi yang valid.\n\n';
+            } else {
+                const expiry = new Date(licenseExpiry);
+                const expiryText = expiry.toLocaleString('id-ID', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+                message += `Lisensi berakhir pada: ${expiryText}\n\n`;
+            }
+            
+            message += 'Dashboard Kasir dan Admin tidak dapat digunakan karena lisensi telah kedaluwarsa.\n\n';
+            message += '💰 Untuk perpanjang lisensi:\n';
+            message += 'Lakukan pembayaran dan kirim bukti konfirmasi ke:\n';
+            message += '📱 085175010097\n\n';
+            message += 'Setelah pembayaran dikonfirmasi, lisensi akan diperpanjang.\n\n';
+            message += 'Anda masih dapat mengakses Server Dashboard untuk mengatur lisensi.';
+            
+            alert(message);
+        }
+
+        function logout() {
+            // Go back to role selection page (don't clear currentUser)
+            document.querySelectorAll('div[id$="Page"]').forEach(div => div.classList.add('hidden'));
+            document.getElementById('roleSelectionPage').classList.remove('hidden');
+        }
+
+        function logoutToMain() {
+            // Clear current user and go back to main page
+            currentUser = null;
+            document.querySelectorAll('div[id$="Page"]').forEach(div => div.classList.add('hidden'));
+            document.getElementById('loginPage').classList.remove('hidden');
+        }
+
+        function updateLicenseStatus() {
+            const statusDiv = document.getElementById('licenseStatus');
+            const countdownDiv = document.getElementById('licenseCountdown');
+            const now = new Date();
+            
+            if (!licenseExpiry) {
+                statusDiv.innerHTML = `
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                        <h4 class="font-bold">❌ Lisensi Belum Diatur</h4>
+                        <p class="text-sm mt-1">Sistem belum memiliki lisensi yang valid. Silahkan atur tanggal berakhir lisensi.</p>
+                    </div>
+                `;
+                countdownDiv.innerHTML = '';
+                
+                // Clear table
+                document.getElementById('licenseDate').textContent = '-';
+                document.getElementById('licenseTime').textContent = '-';
+                document.getElementById('licenseDays').textContent = '-';
+                document.getElementById('licenseHours').textContent = '-';
+                document.getElementById('licenseMinutes').textContent = '-';
+                document.getElementById('licenseSeconds').textContent = '-';
+                return;
+            }
+            
+            const expiry = new Date(licenseExpiry);
+            const isValid = now <= expiry;
+            const daysLeft = Math.ceil((expiry - now) / (1000 * 60 * 60 * 24));
+            
+            if (isValid) {
+                const statusClass = daysLeft <= 7 ? 'bg-yellow-100 border-yellow-400 text-yellow-700' : 'bg-green-100 border-green-400 text-green-700';
+                const icon = daysLeft <= 7 ? '⚠️' : '✅';
+                const title = daysLeft <= 7 ? 'Lisensi Akan Berakhir' : 'Lisensi Aktif';
+                
+                statusDiv.innerHTML = `
+                    <div class="${statusClass} px-4 py-3 rounded border">
+                        <h4 class="font-bold">${icon} ${title}</h4>
+                        <p class="text-sm mt-1">Berlaku sampai: <strong>${expiry.toLocaleDateString('id-ID')} ${expiry.toLocaleTimeString('id-ID')}</strong></p>
+                        <p class="text-sm">Sisa waktu: <strong>${daysLeft} hari</strong></p>
+                        ${daysLeft <= 7 ? '<p class="text-sm mt-2 font-medium">Segera perpanjang lisensi sebelum berakhir!</p>' : ''}
+                    </div>
+                `;
+                
+                // Start countdown
+                startLicenseCountdown(expiry);
+            } else {
+                statusDiv.innerHTML = `
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                        <h4 class="font-bold">❌ Lisensi Kedaluwarsa</h4>
+                        <p class="text-sm mt-1">Lisensi berakhir pada: <strong>${expiry.toLocaleDateString('id-ID')} ${expiry.toLocaleTimeString('id-ID')}</strong></p>
+                        <p class="text-sm">Sistem tidak dapat digunakan sampai lisensi diperpanjang.</p>
+                        <div class="bg-yellow-50 border border-yellow-200 rounded p-2 mt-3">
+                            <p class="text-yellow-800 text-xs">
+                                💰 <strong>Untuk perpanjang lisensi:</strong><br>
+                                Lakukan pembayaran dan kirim bukti konfirmasi ke: <strong>085175010097</strong>
+                            </p>
+                        </div>
+                    </div>
+                `;
+                countdownDiv.innerHTML = `
+                    <div class="bg-red-50 border border-red-200 rounded p-3">
+                        <p class="text-red-800 text-center font-bold text-lg">⏰ LISENSI KEDALUWARSA</p>
+                    </div>
+                `;
+                
+                // Update table with expired info
+                updateLicenseDetailsTable(expiry);
+                document.getElementById('licenseDays').innerHTML = '<span class="text-red-600 font-bold">KEDALUWARSA</span>';
+                document.getElementById('licenseHours').innerHTML = '<span class="text-red-600 font-bold">-</span>';
+                document.getElementById('licenseMinutes').innerHTML = '<span class="text-red-600 font-bold">-</span>';
+                document.getElementById('licenseSeconds').innerHTML = '<span class="text-red-600 font-bold">-</span>';
+            }
+        }
+
+        function updateAdminLicenseStatus() {
+            const statusDiv = document.getElementById('adminLicenseStatus');
+            const countdownDiv = document.getElementById('adminLicenseCountdown');
+            const now = new Date();
+            
+            if (!licenseExpiry) {
+                statusDiv.innerHTML = `
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                        <h4 class="font-bold">❌ Lisensi Belum Diatur</h4>
+                        <p class="text-sm mt-1">Sistem belum memiliki lisensi yang valid. Hubungi server admin untuk mengatur lisensi.</p>
+                    </div>
+                `;
+                countdownDiv.innerHTML = '';
+                
+                // Clear admin table
+                document.getElementById('adminLicenseDate').textContent = '-';
+                document.getElementById('adminLicenseTime').textContent = '-';
+                document.getElementById('adminLicenseDays').textContent = '-';
+                document.getElementById('adminLicenseHours').textContent = '-';
+                document.getElementById('adminLicenseMinutes').textContent = '-';
+                document.getElementById('adminLicenseSeconds').textContent = '-';
+                return;
+            }
+            
+            const expiry = new Date(licenseExpiry);
+            const isValid = now <= expiry;
+            const daysLeft = Math.ceil((expiry - now) / (1000 * 60 * 60 * 24));
+            
+            if (isValid) {
+                const statusClass = daysLeft <= 7 ? 'bg-yellow-100 border-yellow-400 text-yellow-700' : 'bg-green-100 border-green-400 text-green-700';
+                const icon = daysLeft <= 7 ? '⚠️' : '✅';
+                const title = daysLeft <= 7 ? 'Lisensi Akan Berakhir' : 'Lisensi Aktif';
+                
+                statusDiv.innerHTML = `
+                    <div class="${statusClass} px-4 py-3 rounded border">
+                        <h4 class="font-bold">${icon} ${title}</h4>
+                        <p class="text-sm mt-1">Berlaku sampai: <strong>${expiry.toLocaleDateString('id-ID')} ${expiry.toLocaleTimeString('id-ID')}</strong></p>
+                        <p class="text-sm">Sisa waktu: <strong>${daysLeft} hari</strong></p>
+                        ${daysLeft <= 7 ? '<p class="text-sm mt-2 font-medium">Segera perpanjang lisensi sebelum berakhir!</p>' : ''}
+                    </div>
+                `;
+                
+                // Start admin countdown
+                startAdminLicenseCountdown(expiry);
+            } else {
+                statusDiv.innerHTML = `
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                        <h4 class="font-bold">❌ Lisensi Kedaluwarsa</h4>
+                        <p class="text-sm mt-1">Lisensi berakhir pada: <strong>${expiry.toLocaleDateString('id-ID')} ${expiry.toLocaleTimeString('id-ID')}</strong></p>
+                        <p class="text-sm">Sistem tidak dapat digunakan sampai lisensi diperpanjang.</p>
+                        <div class="bg-yellow-50 border border-yellow-200 rounded p-2 mt-3">
+                            <p class="text-yellow-800 text-xs">
+                                💰 <strong>Untuk perpanjang lisensi:</strong><br>
+                                Lakukan pembayaran dan kirim bukti konfirmasi ke: <strong>085175010097</strong>
+                            </p>
+                        </div>
+                    </div>
+                `;
+                countdownDiv.innerHTML = `
+                    <div class="bg-red-50 border border-red-200 rounded p-3">
+                        <p class="text-red-800 text-center font-bold text-lg">⏰ LISENSI KEDALUWARSA</p>
+                    </div>
+                `;
+                
+                // Update admin table with expired info
+                updateAdminLicenseDetailsTable(expiry);
+                document.getElementById('adminLicenseDays').innerHTML = '<span class="text-red-600 font-bold">KEDALUWARSA</span>';
+                document.getElementById('adminLicenseHours').innerHTML = '<span class="text-red-600 font-bold">-</span>';
+                document.getElementById('adminLicenseMinutes').innerHTML = '<span class="text-red-600 font-bold">-</span>';
+                document.getElementById('adminLicenseSeconds').innerHTML = '<span class="text-red-600 font-bold">-</span>';
+            }
+        }
+
+        function startLicenseCountdown(expiryDate) {
+            // Clear existing countdown
+            if (licenseCountdownInterval) {
+                clearInterval(licenseCountdownInterval);
+            }
+            
+            const countdownDiv = document.getElementById('licenseCountdown');
+            
+            // Update license details table immediately
+            updateLicenseDetailsTable(expiryDate);
+            
+            licenseCountdownInterval = setInterval(() => {
+                const now = new Date().getTime();
+                const expiry = new Date(expiryDate).getTime();
+                const distance = expiry - now;
+                
+                if (distance < 0) {
+                    countdownDiv.innerHTML = `
+                        <div class="bg-red-50 border border-red-200 rounded p-3">
+                            <p class="text-red-800 text-center font-bold text-lg">⏰ LISENSI KEDALUWARSA</p>
+                        </div>
+                    `;
+                    
+                    // Update table with expired status
+                    document.getElementById('licenseDays').innerHTML = '<span class="text-red-600 font-bold">KEDALUWARSA</span>';
+                    document.getElementById('licenseHours').innerHTML = '<span class="text-red-600 font-bold">-</span>';
+                    document.getElementById('licenseMinutes').innerHTML = '<span class="text-red-600 font-bold">-</span>';
+                    document.getElementById('licenseSeconds').innerHTML = '<span class="text-red-600 font-bold">-</span>';
+                    
+                    clearInterval(licenseCountdownInterval);
+                    return;
+                }
+                
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                
+                const countdownClass = days <= 7 ? 'bg-yellow-50 border-yellow-200 text-yellow-800' : 'bg-blue-50 border-blue-200 text-blue-800';
+                const icon = days <= 7 ? '⚠️' : '⏰';
+                
+                countdownDiv.innerHTML = `
+                    <div class="${countdownClass} border rounded p-3">
+                        <p class="text-center font-medium mb-2">${icon} Sisa Waktu Lisensi:</p>
+                        <div class="text-center">
+                            <div class="grid grid-cols-4 gap-2 text-sm">
+                                <div class="bg-white rounded p-2 border">
+                                    <div class="font-bold text-lg">${days}</div>
+                                    <div class="text-xs">Hari</div>
+                                </div>
+                                <div class="bg-white rounded p-2 border">
+                                    <div class="font-bold text-lg">${hours.toString().padStart(2, '0')}</div>
+                                    <div class="text-xs">Jam</div>
+                                </div>
+                                <div class="bg-white rounded p-2 border">
+                                    <div class="font-bold text-lg">${minutes.toString().padStart(2, '0')}</div>
+                                    <div class="text-xs">Menit</div>
+                                </div>
+                                <div class="bg-white rounded p-2 border">
+                                    <div class="font-bold text-lg">${seconds.toString().padStart(2, '0')}</div>
+                                    <div class="text-xs">Detik</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Update table with current countdown
+                const dayClass = days <= 7 ? 'text-yellow-600 font-bold' : 'text-green-600 font-bold';
+                const timeClass = days <= 7 ? 'text-yellow-600 font-bold' : 'text-blue-600 font-bold';
+                
+                document.getElementById('licenseDays').innerHTML = `<span class="${dayClass}">${days}</span>`;
+                document.getElementById('licenseHours').innerHTML = `<span class="${timeClass}">${hours.toString().padStart(2, '0')}</span>`;
+                document.getElementById('licenseMinutes').innerHTML = `<span class="${timeClass}">${minutes.toString().padStart(2, '0')}</span>`;
+                document.getElementById('licenseSeconds').innerHTML = `<span class="${timeClass}">${seconds.toString().padStart(2, '0')}</span>`;
+            }, 1000);
+        }
+
+        function updateLicenseDetailsTable(expiryDate) {
+            const expiry = new Date(expiryDate);
+            
+            // Format date and time
+            const dateStr = expiry.toLocaleDateString('id-ID', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            const timeStr = expiry.toLocaleTimeString('id-ID', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            
+            document.getElementById('licenseDate').innerHTML = `<span class="font-medium">${dateStr}</span>`;
+            document.getElementById('licenseTime').innerHTML = `<span class="font-medium">${timeStr}</span>`;
+        }
+
+        function updateAdminLicenseDetailsTable(expiryDate) {
+            const expiry = new Date(expiryDate);
+            
+            // Format date and time
+            const dateStr = expiry.toLocaleDateString('id-ID', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            const timeStr = expiry.toLocaleTimeString('id-ID', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            
+            document.getElementById('adminLicenseDate').innerHTML = `<span class="font-medium">${dateStr}</span>`;
+            document.getElementById('adminLicenseTime').innerHTML = `<span class="font-medium">${timeStr}</span>`;
+        }
+
+        function startAdminLicenseCountdown(expiryDate) {
+            // Clear existing countdown
+            if (adminLicenseCountdownInterval) {
+                clearInterval(adminLicenseCountdownInterval);
+            }
+            
+            const countdownDiv = document.getElementById('adminLicenseCountdown');
+            
+            // Update admin license details table immediately
+            updateAdminLicenseDetailsTable(expiryDate);
+            
+            adminLicenseCountdownInterval = setInterval(() => {
+                const now = new Date().getTime();
+                const expiry = new Date(expiryDate).getTime();
+                const distance = expiry - now;
+                
+                if (distance < 0) {
+                    countdownDiv.innerHTML = `
+                        <div class="bg-red-50 border border-red-200 rounded p-3">
+                            <p class="text-red-800 text-center font-bold text-lg">⏰ LISENSI KEDALUWARSA</p>
+                        </div>
+                    `;
+                    
+                    // Update admin table with expired status
+                    document.getElementById('adminLicenseDays').innerHTML = '<span class="text-red-600 font-bold">KEDALUWARSA</span>';
+                    document.getElementById('adminLicenseHours').innerHTML = '<span class="text-red-600 font-bold">-</span>';
+                    document.getElementById('adminLicenseMinutes').innerHTML = '<span class="text-red-600 font-bold">-</span>';
+                    document.getElementById('adminLicenseSeconds').innerHTML = '<span class="text-red-600 font-bold">-</span>';
+                    
+                    clearInterval(adminLicenseCountdownInterval);
+                    return;
+                }
+                
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                
+                const countdownClass = days <= 7 ? 'bg-yellow-50 border-yellow-200 text-yellow-800' : 'bg-blue-50 border-blue-200 text-blue-800';
+                const icon = days <= 7 ? '⚠️' : '⏰';
+                
+                countdownDiv.innerHTML = `
+                    <div class="${countdownClass} border rounded p-3">
+                        <p class="text-center font-medium mb-2">${icon} Sisa Waktu Lisensi:</p>
+                        <div class="text-center">
+                            <div class="grid grid-cols-4 gap-2 text-sm">
+                                <div class="bg-white rounded p-2 border">
+                                    <div class="font-bold text-lg">${days}</div>
+                                    <div class="text-xs">Hari</div>
+                                </div>
+                                <div class="bg-white rounded p-2 border">
+                                    <div class="font-bold text-lg">${hours.toString().padStart(2, '0')}</div>
+                                    <div class="text-xs">Jam</div>
+                                </div>
+                                <div class="bg-white rounded p-2 border">
+                                    <div class="font-bold text-lg">${minutes.toString().padStart(2, '0')}</div>
+                                    <div class="text-xs">Menit</div>
+                                </div>
+                                <div class="bg-white rounded p-2 border">
+                                    <div class="font-bold text-lg">${seconds.toString().padStart(2, '0')}</div>
+                                    <div class="text-xs">Detik</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                // Update admin table with current countdown
+                const dayClass = days <= 7 ? 'text-yellow-600 font-bold' : 'text-green-600 font-bold';
+                const timeClass = days <= 7 ? 'text-yellow-600 font-bold' : 'text-blue-600 font-bold';
+                
+                document.getElementById('adminLicenseDays').innerHTML = `<span class="${dayClass}">${days}</span>`;
+                document.getElementById('adminLicenseHours').innerHTML = `<span class="${timeClass}">${hours.toString().padStart(2, '0')}</span>`;
+                document.getElementById('adminLicenseMinutes').innerHTML = `<span class="${timeClass}">${minutes.toString().padStart(2, '0')}</span>`;
+                document.getElementById('adminLicenseSeconds').innerHTML = `<span class="${timeClass}">${seconds.toString().padStart(2, '0')}</span>`;
+            }, 1000);
+        }
+
+        function loadCurrentLicense() {
+            if (licenseExpiry) {
+                const expiry = new Date(licenseExpiry);
+                document.getElementById('licenseExpiry').value = expiry.toISOString().split('T')[0];
+                document.getElementById('licenseExpiryTime').value = expiry.toTimeString().split(' ')[0];
+            }
+        }
+
+        function updateLicense() {
+            const newExpiryDate = document.getElementById('licenseExpiry').value;
+            const newExpiryTime = document.getElementById('licenseExpiryTime').value;
+            
+            if (!newExpiryDate) {
+                alert('Pilih tanggal berakhir lisensi!');
+                return;
+            }
+            
+            if (!newExpiryTime) {
+                alert('Pilih jam berakhir lisensi!');
+                return;
+            }
+            
+            const expiryDateTime = new Date(`${newExpiryDate}T${newExpiryTime}`);
+            const now = new Date();
+            
+            if (expiryDateTime <= now) {
+                alert('Tanggal dan waktu berakhir harus di masa depan!');
+                return;
+            }
+            
+            licenseExpiry = expiryDateTime.toISOString();
+            localStorage.setItem('licenseExpiry', licenseExpiry);
+            
+            updateLicenseStatus();
+            alert('Lisensi berhasil diperbarui!');
+        }
+
+        function addUser() {
+            const username = document.getElementById('newUsername').value.trim();
+            const password = document.getElementById('newUserPassword').value.trim();
+            const confirmPassword = document.getElementById('confirmNewUserPassword').value.trim();
+            const authority = document.getElementById('userAuthority').value;
+            
+            if (!username || username.length < 3) {
+                alert('Username minimal 3 karakter!');
+                return;
+            }
+            
+            if (!password || password.length < 4) {
+                alert('Password minimal 4 karakter!');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                alert('Konfirmasi password tidak cocok!');
+                return;
+            }
+            
+            if (!authority) {
+                alert('Pilih otoritas user!');
+                return;
+            }
+            
+            if (users.find(u => u.username === username)) {
+                alert('Username sudah ada!');
+                return;
+            }
+            
+            if (users.length >= 100) {
+                alert('Maksimal 100 user!');
+                return;
+            }
+            
+            users.push({
+                username: username,
+                password: password,
+                authority: authority,
+                createdDate: new Date().toISOString()
+            });
+            
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            document.getElementById('newUsername').value = '';
+            document.getElementById('newUserPassword').value = '';
+            document.getElementById('confirmNewUserPassword').value = '';
+            document.getElementById('userAuthority').value = '';
+            
+            updateUserTable();
+            alert('User berhasil ditambahkan!');
+        }
+
+        let editingUser = null;
+
+        function editUser(username) {
+            const user = users.find(u => u.username === username);
+            if (!user) {
+                alert('User tidak ditemukan!');
+                return;
+            }
+            
+            // Fill form with current user data
+            document.getElementById('newUsername').value = user.username;
+            document.getElementById('newUserPassword').value = user.password;
+            document.getElementById('confirmNewUserPassword').value = user.password;
+            document.getElementById('userAuthority').value = user.authority || 'kasir';
+            
+            // Disable username field (can't change username)
+            document.getElementById('newUsername').disabled = true;
+            
+            // Change button text and function
+            const addButton = document.querySelector('button[onclick="addUser()"]');
+            addButton.textContent = 'Simpan Perubahan';
+            addButton.onclick = () => saveUserChanges(username);
+            addButton.className = 'bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700';
+            
+            // Add cancel button
+            if (!document.getElementById('cancelEditButton')) {
+                const cancelButton = document.createElement('button');
+                cancelButton.id = 'cancelEditButton';
+                cancelButton.textContent = 'Batal';
+                cancelButton.className = 'bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 ml-2';
+                cancelButton.onclick = cancelEdit;
+                addButton.parentNode.appendChild(cancelButton);
+            }
+            
+            editingUser = username;
+            
+            // Scroll to form
+            document.querySelector('.bg-gray-50').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function editUserAuthority(username) {
+            editUser(username); // Use the same edit function
+        }
+
+        function saveUserChanges(originalUsername) {
+            const password = document.getElementById('newUserPassword').value.trim();
+            const confirmPassword = document.getElementById('confirmNewUserPassword').value.trim();
+            const authority = document.getElementById('userAuthority').value;
+            
+            if (!password || password.length < 4) {
+                alert('Password minimal 4 karakter!');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                alert('Konfirmasi password tidak cocok!');
+                return;
+            }
+            
+            if (!authority) {
+                alert('Pilih otoritas user!');
+                return;
+            }
+            
+            // Find and update user
+            const user = users.find(u => u.username === originalUsername);
+            if (user) {
+                user.password = password;
+                user.authority = authority;
+                
+                localStorage.setItem('users', JSON.stringify(users));
+                
+                cancelEdit();
+                updateUserTable();
+                alert(`Data user "${originalUsername}" berhasil diperbarui!`);
+            } else {
+                alert('User tidak ditemukan!');
+            }
+        }
+
+        function cancelEdit() {
+            // Clear form
+            document.getElementById('newUsername').value = '';
+            document.getElementById('newUserPassword').value = '';
+            document.getElementById('confirmNewUserPassword').value = '';
+            document.getElementById('userAuthority').value = '';
+            
+            // Enable username field
+            document.getElementById('newUsername').disabled = false;
+            
+            // Reset button
+            const addButton = document.querySelector('button[onclick*="saveUserChanges"], button[onclick="addUser()"]');
+            addButton.textContent = 'Tambah User';
+            addButton.onclick = addUser;
+            addButton.className = 'bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700';
+            
+            // Remove cancel button
+            const cancelButton = document.getElementById('cancelEditButton');
+            if (cancelButton) {
+                cancelButton.remove();
+            }
+            
+            editingUser = null;
+        }
+
+        function deleteUser(username) {
+            if (username === 'admin') {
+                alert('User admin tidak dapat dihapus karena merupakan Super Admin!');
+                return;
+            }
+            
+            const user = users.find(u => u.username === username);
+            if (!user) {
+                alert('User tidak ditemukan!');
+                return;
+            }
+            
+            // Check if this is the currently logged in user
+            if (username === currentUser) {
+                alert('Anda tidak dapat menghapus akun yang sedang digunakan!');
+                return;
+            }
+            
+            const confirmMessage = `⚠️ PERINGATAN!\n\nAnda akan menghapus user: "${username}"\nOtoritas: ${user.authority || 'kasir'}\n\nTindakan ini tidak dapat dibatalkan!\nSemua data user akan dihilangkan dari sistem!\n\nKetik "HAPUS" untuk konfirmasi:`;
+            
+            const confirmation = prompt(confirmMessage);
+            
+            if (confirmation === 'HAPUS') {
+                // Remove user from array
+                users = users.filter(u => u.username !== username);
+                
+                // Save to localStorage
+                localStorage.setItem('users', JSON.stringify(users));
+                
+                // If currently editing this user, cancel edit
+                if (editingUser === username) {
+                    cancelEdit();
+                }
+                
+                // Update table
+                updateUserTable();
+                
+                alert(`User "${username}" berhasil dihapus dari sistem!\nSemua data user telah dihilangkan.`);
+            } else if (confirmation !== null) {
+                alert('Konfirmasi tidak sesuai. User tidak dihapus.');
+            }
+        }
+
+        function changeAdminPassword() {
+            const newPassword = document.getElementById('newAdminPassword').value.trim();
+            const confirmPassword = document.getElementById('confirmAdminPassword').value.trim();
+            
+            if (!newPassword || newPassword.length < 4) {
+                alert('Password minimal 4 karakter!');
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                alert('Konfirmasi password tidak cocok!');
+                return;
+            }
+            
+            localStorage.setItem('adminPassword', newPassword);
+            
+            document.getElementById('newAdminPassword').value = '';
+            document.getElementById('confirmAdminPassword').value = '';
+            
+            alert('Password admin berhasil diubah!');
+        }
+
+        function changeKasirPassword() {
+            const newPassword = document.getElementById('newKasirPassword').value.trim();
+            const confirmPassword = document.getElementById('confirmKasirPassword').value.trim();
+            
+            if (!newPassword || newPassword.length < 4) {
+                alert('Password minimal 4 karakter!');
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                alert('Konfirmasi password tidak cocok!');
+                return;
+            }
+            
+            localStorage.setItem('kasirPassword', newPassword);
+            
+            document.getElementById('newKasirPassword').value = '';
+            document.getElementById('confirmKasirPassword').value = '';
+            
+            alert('Password kasir berhasil diubah!');
+        }
+
+        function updateUserTable() {
+            const tbody = document.getElementById('userTable');
+            
+            if (users.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center p-4 text-gray-500">Belum ada user</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = users.map((user, i) => {
+                const createdDate = new Date(user.createdDate).toLocaleDateString('id-ID');
+                const isAdmin = user.username === 'admin';
+                const authority = user.authority || 'kasir';
+                
+                // Authority display
+                let authorityDisplay = '';
+                let authorityClass = '';
+                
+                if (authority === 'kasir') {
+                    authorityDisplay = 'Kasir';
+                    authorityClass = 'bg-purple-100 text-purple-800';
+                } else if (authority === 'kasir+admin') {
+                    authorityDisplay = 'Kasir + Admin';
+                    authorityClass = 'bg-blue-100 text-blue-800';
+                } else if (authority === 'kasir+admin+server') {
+                    authorityDisplay = 'Kasir + Admin + Server';
+                    authorityClass = 'bg-red-100 text-red-800';
+                }
+                
+                return `
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="p-2">${i + 1}</td>
+                    <td class="p-2">
+                        <span class="${isAdmin ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'} px-2 py-1 rounded text-xs font-medium">
+                            ${user.username}${isAdmin ? ' (Super Admin)' : ''}
+                        </span>
+                    </td>
+                    <td class="p-2">
+                        <span class="${authorityClass} px-2 py-1 rounded text-xs font-medium">
+                            ${authorityDisplay}
+                        </span>
+                    </td>
+                    <td class="p-2 text-sm text-gray-600">${createdDate}</td>
+                    <td class="p-2">
+                        <button onclick="editUser('${user.username}')" class="bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600 mr-1">
+                            Edit Password
+                        </button>
+                        ${!isAdmin ? `<button onclick="editUserAuthority('${user.username}')" class="bg-orange-500 text-white px-2 py-1 rounded text-xs hover:bg-orange-600 mr-1">Edit Otoritas</button>` : ''}
+                        ${!isAdmin && currentUser === 'admin' ? `<button onclick="deleteUser('${user.username}')" class="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600">Hapus</button>` : ''}
+                        ${isAdmin ? '<span class="text-gray-400 text-xs">Super Admin</span>' : ''}
+                        ${!isAdmin && currentUser !== 'admin' ? '<span class="text-gray-400 text-xs">Hanya Super Admin</span>' : ''}
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        function addPhone() {
+            const phone = document.getElementById('phoneInput').value.trim();
+            const name = document.getElementById('nameInput').value.trim() || 'Tanpa Nama';
+            const peopleCount = parseInt(document.getElementById('peopleCountInput').value) || 1;
+            const expiryDate = document.getElementById('expiryDate').value;
+            const expiryTime = document.getElementById('expiryTime').value;
+            
+            if (!phone || phones.find(p => p.phone === phone)) {
+                alert('Nomor kosong atau sudah ada!');
+                return;
+            }
+
+            if (peopleCount < 1 || peopleCount > 100) {
+                alert('Jumlah orang harus antara 1-100!');
+                return;
+            }
+
+            if (!expiryDate || !expiryTime) {
+                alert('Mohon pilih tanggal dan waktu masa berlaku voucher!');
+                return;
+            }
+
+            const expiryDateTime = new Date(`${expiryDate}T${expiryTime}`);
+            
+            if (expiryDateTime <= new Date()) {
+                alert('Masa berlaku harus di masa depan!');
+                return;
+            }
+            
+            phones.push({
+                id: Date.now(),
+                phone: phone,
+                name: name,
+                peopleCount: peopleCount,
+                voucher: generateVoucher(),
+                expiry: expiryDateTime.toISOString(),
+                createdBy: currentUser
+            });
+
+            document.getElementById('phoneInput').value = '';
+            document.getElementById('nameInput').value = '';
+            document.getElementById('peopleCountInput').value = '1';
+            document.getElementById('expiryDate').value = '';
+            document.getElementById('expiryTime').value = '';
+            updateTable();
+        }
+
+        function setDefaultExpiry() {
+            const now = new Date();
+            const defaultExpiry = new Date(now.getTime() + 24 * 60 * 60 * 1000); // 24 jam dari sekarang
+            
+            const dateStr = defaultExpiry.toISOString().split('T')[0];
+            const timeStr = "06:00:00"; // Default jam 06:00:00
+            
+            document.getElementById('expiryDate').value = dateStr;
+            document.getElementById('expiryTime').value = timeStr;
+        }
+
+        function generateVoucher() {
+            const now = new Date();
+            const monthCodes = ['JN','FB','MR','AP','MY','JN','JL','AG','SP','OK','NV','DS'];
+            const monthCode = monthCodes[now.getMonth()];
+            const dayCode = now.getDate().toString().padStart(2, '0');
+            const randomCode = Math.random().toString(36).substr(2, 4).toUpperCase();
+            return monthCode + dayCode + randomCode;
+        }
+
+        function removePhone(id) {
+            phones = phones.filter(p => p.id !== id);
+            updateTable();
+        }
+
+        function editExpiry(id) {
+            const phone = phones.find(p => p.id === id);
+            if (!phone) return;
+            
+            const currentExpiry = new Date(phone.expiry);
+            const dateString = currentExpiry.toISOString().slice(0, 16);
+            
+            const newExpiry = prompt(`Edit masa berlaku voucher untuk ${phone.phone}:\n\nFormat: YYYY-MM-DDTHH:MM`, dateString);
+            
+            if (newExpiry && newExpiry !== dateString) {
+                const newDate = new Date(newExpiry);
+                if (newDate > new Date()) {
+                    phone.expiry = newDate.toISOString();
+                    updateTable();
+                    alert('Masa berlaku berhasil diubah!');
+                } else {
+                    alert('Tanggal harus di masa depan!');
+                }
+            }
+        }
+
+        function updateTable() {
+            const tbody = document.getElementById('phoneTable');
+            const count = document.getElementById('phoneCount');
+            
+            count.textContent = phones.length;
+            
+            if (phones.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center p-4 text-gray-500">Belum ada data</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = phones.map((phone, i) => {
+                const expiry = new Date(phone.expiry);
+                const isExpired = expiry < new Date();
+                const expiryText = expiry.toLocaleString('id-ID');
+                const peopleCount = phone.peopleCount || 1;
+                
+                return `
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="p-2">${i + 1}</td>
+                    <td class="p-2">${phone.phone}</td>
+                    <td class="p-2">${phone.name}</td>
+                    <td class="p-2">
+                        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">${peopleCount} orang</span>
+                    </td>
+                    <td class="p-2">
+                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">${phone.voucher}</span>
+                    </td>
+                    <td class="p-2">
+                        <span class="${isExpired ? 'text-red-600' : 'text-green-600'} text-xs">
+                            ${expiryText}
+                        </span>
+                    </td>
+                    <td class="p-2">
+                        <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">${phone.createdBy || 'Unknown'}</span>
+                    </td>
+                    <td class="p-2">
+                        ${currentUser === 'admin' ? `<button onclick="removePhone(${phone.id})" class="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600">Hapus</button>` : '<span class="text-gray-400 text-xs">-</span>'}
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        function checkVoucher() {
+            const phone = document.getElementById('customerPhone').value.trim();
+            const result = document.getElementById('voucherResult');
+            
+            if (!phone) {
+                alert('Masukkan nomor telepon!');
+                return;
+            }
+
+            const found = phones.find(p => p.phone === phone);
+            
+            if (found) {
+                const expiry = new Date(found.expiry);
+                const isExpired = expiry < new Date();
+                const isRedeemed = redeemedVouchers.includes(found.id);
+                const expiryText = expiry.toLocaleString('id-ID', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+                
+                if (isRedeemed) {
+                    const redeemTime = new Date(found.redeemTime).toLocaleString('id-ID', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                    });
+                    
+                    result.innerHTML = `
+                        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                            <h4 class="font-bold">❌ Voucher Sudah Tidak Berlaku</h4>
+                            <div class="bg-white rounded p-3 mt-3 border border-red-200">
+                                <p class="font-bold text-red-800 mb-2">🏆 PLATINUM LOUNGE</p>
+                                <p>Kode Voucher: <strong>${found.voucher}</strong></p>
+                                <p class="text-sm mt-1">Atas nama: ${found.name}</p>
+                                <p class="text-sm mt-1">Berlaku untuk: <strong>${found.peopleCount || 1} orang</strong></p>
+                                <p class="text-sm mt-2 font-medium text-red-600">📅 Waktu Ditukar:</p>
+                                <p class="text-sm font-bold">${redeemTime}</p>
+                            </div>
+                            <div class="bg-yellow-50 border border-yellow-200 rounded p-2 mt-3">
+                                <p class="text-yellow-800 text-xs">
+                                    ⚠️ <strong>Voucher sudah ditukar!</strong> Voucher ini telah digunakan di <strong>Platinum Lounge</strong> dan tidak dapat digunakan lagi.
+                                </p>
+                            </div>
+                        </div>
+                    `;
+                } else if (isExpired) {
+                    result.innerHTML = `
+                        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                            <h4 class="font-bold">⏰ Voucher Kedaluwarsa</h4>
+                            <p>Voucher Anda sudah tidak berlaku sejak: ${expiryText}</p>
+                            <p class="text-sm mt-2">Silahkan hubungi admin di: <strong>085175010097</strong></p>
+                        </div>
+                    `;
+                } else {
+                    result.innerHTML = `
+                        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                            <h4 class="font-bold">🎉 Selamat!</h4>
+                            <p>Kode voucher Anda: <strong>${found.voucher}</strong></p>
+                            <p class="text-sm mt-1">Atas nama: ${found.name}</p>
+                            <p class="text-sm mt-1">Berlaku untuk: <strong>${found.peopleCount || 1} orang</strong></p>
+                            <p class="text-sm mt-2 font-medium">Berlaku sampai: ${expiryText}</p>
+                            <div class="bg-blue-50 border border-blue-200 rounded p-3 mt-3">
+                                <p class="text-blue-800 text-sm font-medium mb-2">⏰ Sisa waktu berlaku:</p>
+                                <div id="countdown-${found.voucher}" class="text-2xl font-bold text-blue-900 text-center"></div>
+                            </div>
+                            <div class="bg-yellow-50 border border-yellow-200 rounded p-2 mt-3">
+                                <p class="text-yellow-800 text-xs">
+                                    ⚠️ <strong>Penting:</strong> Setelah penukaran voucher, hanya berlaku 3 jam dalam <strong>Platinum Lounge</strong>
+                                </p>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Start countdown
+                    startCountdown(found.voucher, expiry);
+                }
+            } else {
+                result.innerHTML = `
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                        <h4 class="font-bold">❌ Nomor Tidak Terdaftar</h4>
+                        <p>Nomor telepon Anda belum terdaftar dalam sistem.</p>
+                        <p class="text-sm mt-2">Silahkan hubungi admin di: <strong>085175010097</strong></p>
+                    </div>
+                `;
+            }
+            
+            result.classList.remove('hidden');
+        }
+
+        let countdownIntervals = {};
+
+        function startCountdown(voucherCode, expiryDate) {
+            // Clear existing countdown if any
+            if (countdownIntervals[voucherCode]) {
+                clearInterval(countdownIntervals[voucherCode]);
+            }
+            
+            const countdownElement = document.getElementById(`countdown-${voucherCode}`);
+            if (!countdownElement) return;
+            
+            countdownIntervals[voucherCode] = setInterval(() => {
+                const now = new Date().getTime();
+                const expiry = new Date(expiryDate).getTime();
+                const distance = expiry - now;
+                
+                if (distance < 0) {
+                    countdownElement.innerHTML = '<span class="text-red-600">KEDALUWARSA</span>';
+                    clearInterval(countdownIntervals[voucherCode]);
+                    return;
+                }
+                
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                
+                let timeString = '';
+                if (days > 0) timeString += `${days} hari `;
+                timeString += `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                countdownElement.innerHTML = timeString;
+            }, 1000);
+        }
+
+        // Sample data
+        const sampleExpiry1 = new Date();
+        sampleExpiry1.setHours(sampleExpiry1.getHours() + 24);
+        const sampleExpiry2 = new Date();
+        sampleExpiry2.setHours(sampleExpiry2.getHours() + 3);
+        sampleExpiry2.setMinutes(sampleExpiry2.getMinutes() + 20);
+        sampleExpiry2.setSeconds(sampleExpiry2.getSeconds() + 32);
+        
+        phones = [
+            { id: 1, phone: '08123456789', name: 'John Doe', peopleCount: 2, voucher: 'JN15A2B3', expiry: sampleExpiry1.toISOString() },
+            { id: 2, phone: '08987654321', name: 'Jane Smith', peopleCount: 4, voucher: 'JN15X9Y4', expiry: sampleExpiry2.toISOString() }
+        ];
+
+        function redeemVoucher(id) {
+            const phone = phones.find(p => p.id === id);
+            if (!phone) return;
+            
+            if (redeemedVouchers.includes(id)) {
+                alert('Voucher sudah di-redeem!');
+                return;
+            }
+            
+            const expiry = new Date(phone.expiry);
+            if (expiry < new Date()) {
+                alert('Voucher sudah kedaluwarsa!');
+                return;
+            }
+            
+            redeemedVouchers.push(id);
+            phone.redeemTime = new Date().toISOString();
+            phone.redeemedBy = currentUser;
+            
+            // Save to localStorage immediately
+            localStorage.setItem('redeemedVouchers', JSON.stringify(redeemedVouchers));
+            
+            updateKasirTable();
+            updateRedeemedTable();
+            alert(`Voucher ${phone.voucher} berhasil di-redeem!`);
+        }
+
+        function checkExpiredVouchers() {
+            const now = new Date();
+            
+            // Check for newly expired vouchers
+            phones.forEach(phone => {
+                const expiry = new Date(phone.expiry);
+                const isExpired = expiry < now;
+                const isAlreadyExpired = expiredVouchers.some(exp => exp.id === phone.id);
+                const isRedeemed = redeemedVouchers.includes(phone.id);
+                
+                // If voucher just expired and not already in expired list and not redeemed
+                if (isExpired && !isAlreadyExpired && !isRedeemed) {
+                    expiredVouchers.push({
+                        ...phone,
+                        expiredDate: expiry.toISOString()
+                    });
+                }
+            });
+            
+            // Clean expired vouchers older than 30 days
+            const thirtyDaysAgo = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000));
+            expiredVouchers = expiredVouchers.filter(expired => {
+                const expiredDate = new Date(expired.expiredDate);
+                return expiredDate >= thirtyDaysAgo;
+            });
+            
+            // Save to localStorage
+            localStorage.setItem('expiredVouchers', JSON.stringify(expiredVouchers));
+        }
+
+        function updateExpiredTable() {
+            const tbody = document.getElementById('expiredTable');
+            const count = document.getElementById('expiredCount');
+            
+            count.textContent = expiredVouchers.length;
+            
+            if (expiredVouchers.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center p-4 text-gray-500">Belum ada voucher kadaluwarsa</td></tr>';
+                return;
+            }
+
+            const now = new Date();
+            tbody.innerHTML = expiredVouchers.map((expired, i) => {
+                const expiredDate = new Date(expired.expiredDate);
+                const expiredText = expiredDate.toLocaleString('id-ID');
+                const daysPassed = Math.floor((now - expiredDate) / (1000 * 60 * 60 * 24));
+                const daysLeft = 30 - daysPassed;
+                const peopleCount = expired.peopleCount || 1;
+                
+                const statusClass = daysLeft <= 7 ? 'bg-red-100 text-red-800' : 'bg-orange-100 text-orange-800';
+                const statusText = daysLeft <= 7 ? `Akan dihapus ${daysLeft} hari lagi` : `${daysLeft} hari tersisa`;
+                
+                return `
+                <tr class="border-b hover:bg-gray-50 bg-red-50">
+                    <td class="p-2">${i + 1}</td>
+                    <td class="p-2">${expired.name}</td>
+                    <td class="p-2">
+                        <span class="bg-orange-100 text-orange-800 px-2 py-1 rounded text-xs">${peopleCount} orang</span>
+                    </td>
+                    <td class="p-2">
+                        <span class="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs">${expired.voucher}</span>
+                    </td>
+                    <td class="p-2 text-xs text-red-600">${expiredText}</td>
+                    <td class="p-2">
+                        <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">${expired.createdBy || 'Unknown'}</span>
+                    </td>
+                    <td class="p-2">
+                        <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">${daysPassed} hari</span>
+                    </td>
+                    <td class="p-2">
+                        <span class="${statusClass} px-2 py-1 rounded text-xs">${statusText}</span>
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        function updateKasirTable() {
+            const tbody = document.getElementById('todayTable');
+            const count = document.getElementById('todayCount');
+            
+            const validVouchers = phones.filter(phone => {
+                const expiry = new Date(phone.expiry);
+                return expiry >= new Date();
+            });
+            
+            count.textContent = validVouchers.length;
+            
+            if (validVouchers.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center p-4 text-gray-500">Belum ada voucher aktif</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = validVouchers.map((phone, i) => {
+                const expiry = new Date(phone.expiry);
+                const expiryText = expiry.toLocaleString('id-ID');
+                const isRedeemed = redeemedVouchers.includes(phone.id);
+                const peopleCount = phone.peopleCount || 1;
+                
+                return `
+                <tr class="border-b hover:bg-gray-50 ${isRedeemed ? 'bg-green-50' : ''}">
+                    <td class="p-2">${i + 1}</td>
+                    <td class="p-2">${phone.name}</td>
+                    <td class="p-2">
+                        <span class="bg-orange-100 text-orange-800 px-2 py-1 rounded text-xs">${peopleCount} orang</span>
+                    </td>
+                    <td class="p-2">
+                        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">${phone.voucher}</span>
+                    </td>
+                    <td class="p-2 text-xs">${expiryText}</td>
+                    <td class="p-2">
+                        <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">${phone.createdBy || 'Unknown'}</span>
+                    </td>
+                    <td class="p-2">
+                        ${isRedeemed ? 
+                            '<span class="bg-green-500 text-white px-2 py-1 rounded text-xs">✓ REDEEMED</span>' : 
+                            '<span class="bg-yellow-500 text-white px-2 py-1 rounded text-xs">BELUM</span>'
+                        }
+                    </td>
+                    <td class="p-2">
+                        ${!isRedeemed ? 
+                            `<button onclick="redeemVoucher(${phone.id})" class="bg-green-500 text-white px-2 py-1 rounded text-xs hover:bg-green-600">Redeem</button>` :
+                            '<span class="text-green-600 text-xs">Selesai</span>'
+                        }
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        function updateRedeemedTable() {
+            const tbody = document.getElementById('redeemedTable');
+            const count = document.getElementById('redeemedCount');
+            
+            const redeemedData = phones.filter(phone => redeemedVouchers.includes(phone.id));
+            
+            count.textContent = redeemedData.length;
+            
+            if (redeemedData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center p-4 text-gray-500">Belum ada voucher yang ditukar</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = redeemedData.map((phone, i) => {
+                const expiry = new Date(phone.expiry);
+                const expiryText = expiry.toLocaleString('id-ID');
+                const redeemTime = new Date(phone.redeemTime);
+                const redeemText = redeemTime.toLocaleString('id-ID', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+                const peopleCount = phone.peopleCount || 1;
+                
+                return `
+                <tr class="border-b hover:bg-gray-50 bg-green-50">
+                    <td class="p-2">${i + 1}</td>
+                    <td class="p-2">${phone.name}</td>
+                    <td class="p-2">
+                        <span class="bg-orange-100 text-orange-800 px-2 py-1 rounded text-xs">${peopleCount} orang</span>
+                    </td>
+                    <td class="p-2">
+                        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">${phone.voucher}</span>
+                    </td>
+                    <td class="p-2 text-xs">${expiryText}</td>
+                    <td class="p-2">
+                        <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">${phone.createdBy || 'Unknown'}</span>
+                    </td>
+                    <td class="p-2">
+                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">${phone.redeemedBy || 'Unknown'}</span>
+                    </td>
+                    <td class="p-2">
+                        <div class="text-xs">
+                            <div class="font-medium text-green-700">${redeemText}</div>
+                        </div>
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        function checkDailyReset() {
+            const now = new Date();
+            const today = now.toDateString();
+            const lastCheck = localStorage.getItem('lastCheck');
+            
+            if (lastCheck && lastCheck !== today) {
+                // Save yesterday's data
+                const yesterday = new Date(lastCheck);
+                const dateKey = formatDateKey(yesterday);
+                
+                const yesterdayData = phones.filter(phone => redeemedVouchers.includes(phone.id))
+                    .map(phone => ({
+                        ...phone,
+                        redeemTime: phone.redeemTime || new Date().toISOString()
+                    }));
+                
+                if (yesterdayData.length > 0) {
+                    historicalData[dateKey] = {
+                        data: yesterdayData,
+                        timestamp: yesterday.getTime()
+                    };
+                    
+                    // Clean old data (older than 90 days)
+                    cleanOldData();
+                    
+                    localStorage.setItem('historicalData', JSON.stringify(historicalData));
+                    
+                    // Add new tab for yesterday
+                    addHistoricalTab(dateKey);
+                }
+                
+                // Reset redeemed vouchers for new day
+                redeemedVouchers = [];
+                localStorage.setItem('redeemedVouchers', JSON.stringify(redeemedVouchers));
+                
+                // Update redeemed table to show it's empty
+                updateRedeemedTable();
+            }
+            
+            localStorage.setItem('lastCheck', today);
+            
+            // Load historical data
+            const savedHistorical = localStorage.getItem('historicalData');
+            if (savedHistorical) {
+                historicalData = JSON.parse(savedHistorical);
+                
+                // Clean old data on load (90 days for kasir, 31 days for customer)
+                cleanOldData();
+                cleanOldCustomerData();
+                
+                // Sort dates and add tabs
+                const sortedDates = Object.keys(historicalData).sort((a, b) => {
+                    return historicalData[b].timestamp - historicalData[a].timestamp;
+                });
+                
+                sortedDates.forEach(date => {
+                    addHistoricalTab(date);
+                });
+            }
+            
+            // Load saved redeemed vouchers
+            const savedRedeemed = localStorage.getItem('redeemedVouchers');
+            if (savedRedeemed) {
+                redeemedVouchers = JSON.parse(savedRedeemed);
+            }
+            
+            // Load saved expired vouchers
+            const savedExpired = localStorage.getItem('expiredVouchers');
+            if (savedExpired) {
+                expiredVouchers = JSON.parse(savedExpired);
+            }
+            
+            // Set up automatic midnight reset
+            setupMidnightReset();
+        }
+
+        function formatDateKey(date) {
+            return date.toLocaleDateString('id-ID', {
+                day: '2-digit',
+                month: '2-digit', 
+                year: 'numeric'
+            });
+        }
+
+        function cleanOldData() {
+            const now = new Date().getTime();
+            const ninetyDaysAgo = now - (90 * 24 * 60 * 60 * 1000);
+            
+            Object.keys(historicalData).forEach(dateKey => {
+                if (historicalData[dateKey].timestamp < ninetyDaysAgo) {
+                    delete historicalData[dateKey];
+                    
+                    // Remove tab if exists
+                    const tabElement = document.getElementById(`tab-${dateKey.replace(/\//g, '-')}`);
+                    if (tabElement) {
+                        tabElement.remove();
+                    }
+                }
+            });
+        }
+
+        function cleanOldCustomerData() {
+            const now = new Date().getTime();
+            const thirtyOneDaysAgo = now - (31 * 24 * 60 * 60 * 1000);
+            
+            // Clean historical data older than 31 days for customer view
+            Object.keys(historicalData).forEach(dateKey => {
+                const dayData = historicalData[dateKey];
+                if (dayData && dayData.data) {
+                    // Filter out vouchers older than 31 days based on redeem time
+                    dayData.data = dayData.data.filter(voucher => {
+                        if (voucher.redeemTime) {
+                            const redeemTime = new Date(voucher.redeemTime).getTime();
+                            return redeemTime >= thirtyOneDaysAgo;
+                        }
+                        return false;
+                    });
+                    
+                    // If no data left for this date, remove the entire date entry
+                    if (dayData.data.length === 0) {
+                        delete historicalData[dateKey];
+                    }
+                }
+            });
+            
+            // Also clean current redeemed vouchers older than 31 days
+            phones.forEach(phone => {
+                if (phone.redeemTime && redeemedVouchers.includes(phone.id)) {
+                    const redeemTime = new Date(phone.redeemTime).getTime();
+                    if (redeemTime < thirtyOneDaysAgo) {
+                        // Remove from redeemed list
+                        const index = redeemedVouchers.indexOf(phone.id);
+                        if (index > -1) {
+                            redeemedVouchers.splice(index, 1);
+                        }
+                        // Clear redeem time
+                        delete phone.redeemTime;
+                    }
+                }
+            });
+            
+            // Save updated data
+            localStorage.setItem('historicalData', JSON.stringify(historicalData));
+            localStorage.setItem('redeemedVouchers', JSON.stringify(redeemedVouchers));
+        }
+
+        function setupMidnightReset() {
+            const now = new Date();
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(0, 0, 1, 0); // 00:00:01
+            
+            const timeUntilMidnight = tomorrow.getTime() - now.getTime();
+            
+            setTimeout(() => {
+                // Perform daily reset
+                performDailyReset();
+                
+                // Set up daily interval (every 24 hours)
+                setInterval(performDailyReset, 24 * 60 * 60 * 1000);
+            }, timeUntilMidnight);
+        }
+
+        function performDailyReset() {
+            const now = new Date();
+            const yesterday = new Date(now);
+            yesterday.setDate(yesterday.getDate() - 1);
+            
+            const dateKey = formatDateKey(yesterday);
+            
+            // Save yesterday's redeemed vouchers
+            const yesterdayData = phones.filter(phone => redeemedVouchers.includes(phone.id))
+                .map(phone => ({
+                    ...phone,
+                    redeemTime: phone.redeemTime || new Date().toISOString()
+                }));
+            
+            if (yesterdayData.length > 0) {
+                historicalData[dateKey] = {
+                    data: yesterdayData,
+                    timestamp: yesterday.getTime()
+                };
+                
+                // Clean old data (90 days for kasir, 31 days for customer)
+                cleanOldData();
+                cleanOldCustomerData();
+                
+                localStorage.setItem('historicalData', JSON.stringify(historicalData));
+                
+                // Add new tab
+                addHistoricalTab(dateKey);
+            }
+            
+            // Reset redeemed vouchers
+            redeemedVouchers = [];
+            localStorage.setItem('redeemedVouchers', JSON.stringify(redeemedVouchers));
+            
+            // Check and update expired vouchers
+            checkExpiredVouchers();
+            
+            // Update current date check
+            localStorage.setItem('lastCheck', now.toDateString());
+            
+            // Update tables
+            updateRedeemedTable();
+            updateExpiredTable();
+            
+            // Show notification if kasir page is active
+            if (!document.getElementById('kasirPage').classList.contains('hidden')) {
+                alert('🕛 Tengah malam! Data voucher yang ditukar kemarin telah dipindah ke tab rekap. Tab "Ditukar" sekarang kosong untuk hari baru.');
+            }
+        }
+
+        function addHistoricalTab(dateKey) {
+            const tabsContainer = document.getElementById('kasirTabs');
+            const existingTab = document.getElementById(`tab-${dateKey.replace(/\//g, '-')}`);
+            
+            if (!existingTab) {
+                const tabButton = document.createElement('button');
+                tabButton.id = `tab-${dateKey.replace(/\//g, '-')}`;
+                tabButton.className = 'py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300';
+                tabButton.textContent = dateKey;
+                tabButton.onclick = () => showKasirTab(dateKey);
+                tabsContainer.appendChild(tabButton);
+            }
+        }
+
+        function showKasirTab(tabName) {
+            // Reset all tabs
+            document.querySelectorAll('#kasirTabs button').forEach(tab => {
+                tab.className = 'py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300';
+            });
+            
+            // Hide all content
+            document.getElementById('todayContent').classList.add('hidden');
+            document.getElementById('redeemedContent').classList.add('hidden');
+            document.getElementById('expiredContent').classList.add('hidden');
+            document.getElementById('historicalContent').classList.add('hidden');
+            
+            if (tabName === 'today') {
+                document.getElementById('todayTab').className = 'py-2 px-1 border-b-2 border-purple-500 font-medium text-sm text-purple-600';
+                document.getElementById('todayContent').classList.remove('hidden');
+            } else if (tabName === 'redeemed') {
+                document.getElementById('redeemedTab').className = 'py-2 px-1 border-b-2 border-purple-500 font-medium text-sm text-purple-600';
+                document.getElementById('redeemedContent').classList.remove('hidden');
+            } else if (tabName === 'expired') {
+                document.getElementById('expiredTab').className = 'py-2 px-1 border-b-2 border-purple-500 font-medium text-sm text-purple-600';
+                document.getElementById('expiredContent').classList.remove('hidden');
+                checkExpiredVouchers();
+                updateExpiredTable();
+            } else {
+                document.getElementById(`tab-${tabName.replace(/\//g, '-')}`).className = 'py-2 px-1 border-b-2 border-purple-500 font-medium text-sm text-purple-600';
+                document.getElementById('historicalContent').classList.remove('hidden');
+                showHistoricalData(tabName);
+            }
+        }
+
+        function showHistoricalData(dateKey) {
+            const tbody = document.getElementById('historicalTable');
+            const historicalEntry = historicalData[dateKey];
+            const data = historicalEntry ? historicalEntry.data : [];
+            
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="text-center p-4 text-gray-500">Tidak ada data</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = data.map((phone, i) => {
+                const expiry = new Date(phone.expiry);
+                const expiryText = expiry.toLocaleString('id-ID');
+                const redeemTime = new Date(phone.redeemTime).toLocaleString('id-ID', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+                const peopleCount = phone.peopleCount || 1;
+                
+                return `
+                <tr class="border-b hover:bg-gray-50 bg-green-50">
+                    <td class="p-2">${i + 1}</td>
+                    <td class="p-2">${phone.name}</td>
+                    <td class="p-2">
+                        <span class="bg-orange-100 text-orange-800 px-2 py-1 rounded text-xs">${peopleCount} orang</span>
+                    </td>
+                    <td class="p-2">
+                        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">${phone.voucher}</span>
+                    </td>
+                    <td class="p-2 text-xs">${expiryText}</td>
+                    <td class="p-2">
+                        <span class="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">${phone.createdBy || 'Unknown'}</span>
+                    </td>
+                    <td class="p-2">
+                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">${phone.redeemedBy || 'Unknown'}</span>
+                    </td>
+                    <td class="p-2">
+                        <span class="bg-green-500 text-white px-2 py-1 rounded text-xs">✓ REDEEMED</span>
+                    </td>
+                    <td class="p-2">
+                        <div class="text-xs">
+                            <div class="font-medium text-green-700">${redeemTime}</div>
+                        </div>
+                    </td>
+                </tr>
+                `;
+            }).join('');
+        }
+
+        // Export Functions
+        function exportToExcel(tabType) {
+            const data = getExportData(tabType);
+            if (!data || data.length === 0) {
+                alert('Tidak ada data untuk diekspor!');
+                return;
+            }
+            
+            const headers = getExportHeaders(tabType);
+            const csvContent = [headers, ...data].map(row => 
+                row.map(cell => `"${cell}"`).join(',')
+            ).join('\n');
+            
+            const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `${getFileName(tabType)}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            alert('Data berhasil diekspor ke Excel! File CSV telah diunduh.');
+        }
+
+        function exportToCSV(tabType) {
+            const data = getExportData(tabType);
+            if (!data || data.length === 0) {
+                alert('Tidak ada data untuk diekspor!');
+                return;
+            }
+            
+            const headers = getExportHeaders(tabType);
+            const csvContent = [headers, ...data].map(row => 
+                row.map(cell => `"${cell}"`).join(',')
+            ).join('\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `${getFileName(tabType)}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            alert('Data berhasil diekspor ke CSV!');
+        }
+
+        function exportToPDF(tabType) {
+            const data = getExportData(tabType);
+            if (!data || data.length === 0) {
+                alert('Tidak ada data untuk diekspor!');
+                return;
+            }
+            
+            const headers = getExportHeaders(tabType);
+            const title = getExportTitle(tabType);
+            const fileName = getFileName(tabType);
+            
+            // Create a new window for PDF
+            const printWindow = window.open('', '_blank');
+            
+            const htmlContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>${title}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; }
+                        h1 { color: #333; text-align: center; margin-bottom: 20px; }
+                        .info { text-align: center; margin-bottom: 20px; color: #666; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 12px; }
+                        th { background-color: #f2f2f2; font-weight: bold; }
+                        tr:nth-child(even) { background-color: #f9f9f9; }
+                        .footer { margin-top: 20px; text-align: center; font-size: 10px; color: #666; }
+                        @media print {
+                            body { margin: 0; }
+                            .no-print { display: none; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h1>🏆 PLATINUM LOUNGE</h1>
+                    <h2 style="text-align: center; color: #666;">${title}</h2>
+                    <div class="info">
+                        <p>Tanggal Cetak: ${new Date().toLocaleDateString('id-ID', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        })}</p>
+                        <p>Total Data: ${data.length} voucher</p>
+                        <p>Dicetak oleh: ${currentUser}</p>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                ${headers.map(header => `<th>${header}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.map(row => `
+                                <tr>
+                                    ${row.map(cell => `<td>${cell}</td>`).join('')}
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    <div class="footer">
+                        <p>Sistem Voucher UMKM TAMUKU - Platinum Lounge</p>
+                        <p>Dokumen ini dicetak secara otomatis dari sistem</p>
+                    </div>
+                    <div class="no-print" style="text-align: center; margin-top: 20px;">
+                        <button onclick="window.print()" style="background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+                            🖨️ Cetak PDF
+                        </button>
+                        <button onclick="window.close()" style="background: #6c757d; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">
+                            ❌ Tutup
+                        </button>
+                    </div>
+                </body>
+                </html>
+            `;
+            
+            printWindow.document.write(htmlContent);
+            printWindow.document.close();
+            
+            // Auto print after a short delay
+            setTimeout(() => {
+                printWindow.focus();
+            }, 500);
+            
+            alert('Jendela PDF telah dibuka! Klik tombol "Cetak PDF" untuk menyimpan sebagai PDF.');
+        }
+
+        function getExportData(tabType) {
+            let data = [];
+            
+            switch(tabType) {
+                case 'today':
+                    const validVouchers = phones.filter(phone => {
+                        const expiry = new Date(phone.expiry);
+                        return expiry >= new Date();
+                    });
+                    
+                    data = validVouchers.map((phone, i) => {
+                        const expiry = new Date(phone.expiry);
+                        const expiryText = expiry.toLocaleString('id-ID');
+                        const isRedeemed = redeemedVouchers.includes(phone.id);
+                        const peopleCount = phone.peopleCount || 1;
+                        const status = isRedeemed ? 'DITUKAR' : 'BELUM DITUKAR';
+                        
+                        return [
+                            i + 1,
+                            phone.name,
+                            `${peopleCount} orang`,
+                            phone.voucher,
+                            expiryText,
+                            phone.createdBy || 'Unknown',
+                            status
+                        ];
+                    });
+                    break;
+                    
+                case 'redeemed':
+                    const redeemedData = phones.filter(phone => redeemedVouchers.includes(phone.id));
+                    
+                    data = redeemedData.map((phone, i) => {
+                        const expiry = new Date(phone.expiry);
+                        const expiryText = expiry.toLocaleString('id-ID');
+                        const redeemTime = new Date(phone.redeemTime);
+                        const redeemText = redeemTime.toLocaleString('id-ID');
+                        const peopleCount = phone.peopleCount || 1;
+                        
+                        return [
+                            i + 1,
+                            phone.name,
+                            `${peopleCount} orang`,
+                            phone.voucher,
+                            expiryText,
+                            phone.createdBy || 'Unknown',
+                            phone.redeemedBy || 'Unknown',
+                            redeemText
+                        ];
+                    });
+                    break;
+                    
+                case 'expired':
+                    const now = new Date();
+                    data = expiredVouchers.map((expired, i) => {
+                        const expiredDate = new Date(expired.expiredDate);
+                        const expiredText = expiredDate.toLocaleString('id-ID');
+                        const daysPassed = Math.floor((now - expiredDate) / (1000 * 60 * 60 * 24));
+                        const daysLeft = 30 - daysPassed;
+                        const peopleCount = expired.peopleCount || 1;
+                        const statusText = daysLeft <= 7 ? `Akan dihapus ${daysLeft} hari lagi` : `${daysLeft} hari tersisa`;
+                        
+                        return [
+                            i + 1,
+                            expired.name,
+                            `${peopleCount} orang`,
+                            expired.voucher,
+                            expiredText,
+                            expired.createdBy || 'Unknown',
+                            `${daysPassed} hari`,
+                            statusText
+                        ];
+                    });
+                    break;
+                    
+                case 'historical':
+                    // Get current historical tab data
+                    const activeTab = document.querySelector('#kasirTabs button.border-purple-500');
+                    if (activeTab && activeTab.textContent !== 'Hari Ini' && activeTab.textContent !== 'Ditukar' && activeTab.textContent !== 'Kadaluwarsa') {
+                        const dateKey = activeTab.textContent;
+                        const historicalEntry = historicalData[dateKey];
+                        const historicalDataArray = historicalEntry ? historicalEntry.data : [];
+                        
+                        data = historicalDataArray.map((phone, i) => {
+                            const expiry = new Date(phone.expiry);
+                            const expiryText = expiry.toLocaleString('id-ID');
+                            const redeemTime = new Date(phone.redeemTime);
+                            const redeemText = redeemTime.toLocaleString('id-ID');
+                            const peopleCount = phone.peopleCount || 1;
+                            
+                            return [
+                                i + 1,
+                                phone.name,
+                                `${peopleCount} orang`,
+                                phone.voucher,
+                                expiryText,
+                                phone.createdBy || 'Unknown',
+                                phone.redeemedBy || 'Unknown',
+                                'DITUKAR',
+                                redeemText
+                            ];
+                        });
+                    }
+                    break;
+            }
+            
+            return data;
+        }
+
+        function getExportHeaders(tabType) {
+            switch(tabType) {
+                case 'today':
+                    return ['No', 'Nama', 'Jumlah Orang', 'Kode Voucher', 'Masa Berlaku', 'Dibuat Oleh', 'Status'];
+                case 'redeemed':
+                    return ['No', 'Nama', 'Jumlah Orang', 'Kode Voucher', 'Masa Berlaku', 'Dibuat Oleh', 'Ditukar Oleh', 'Waktu Ditukar'];
+                case 'expired':
+                    return ['No', 'Nama', 'Jumlah Orang', 'Kode Voucher', 'Tanggal Kadaluwarsa', 'Dibuat Oleh', 'Hari Berlalu', 'Status'];
+                case 'historical':
+                    return ['No', 'Nama', 'Jumlah Orang', 'Kode Voucher', 'Masa Berlaku', 'Dibuat Oleh', 'Ditukar Oleh', 'Status', 'Waktu Redeem'];
+                default:
+                    return [];
+            }
+        }
+
+        function getExportTitle(tabType) {
+            const activeTab = document.querySelector('#kasirTabs button.border-purple-500');
+            const today = new Date().toLocaleDateString('id-ID');
+            
+            switch(tabType) {
+                case 'today':
+                    return `Laporan Voucher Hari Ini - ${today}`;
+                case 'redeemed':
+                    return `Laporan Voucher Ditukar - ${today}`;
+                case 'expired':
+                    return `Laporan Voucher Kadaluwarsa - ${today}`;
+                case 'historical':
+                    const dateKey = activeTab ? activeTab.textContent : 'Rekap';
+                    return `Laporan Rekap Voucher - ${dateKey}`;
+                default:
+                    return 'Laporan Voucher';
+            }
+        }
+
+        function getFileName(tabType) {
+            const today = new Date().toISOString().split('T')[0];
+            const activeTab = document.querySelector('#kasirTabs button.border-purple-500');
+            
+            switch(tabType) {
+                case 'today':
+                    return `voucher-hari-ini-${today}`;
+                case 'redeemed':
+                    return `voucher-ditukar-${today}`;
+                case 'expired':
+                    return `voucher-kadaluwarsa-${today}`;
+                case 'historical':
+                    const dateKey = activeTab ? activeTab.textContent.replace(/\//g, '-') : 'rekap';
+                    return `voucher-rekap-${dateKey}-${today}`;
+                default:
+                    return `voucher-export-${today}`;
+            }
+        }
+
+        // Enter key listeners
+        document.getElementById('adminPassword').addEventListener('keypress', e => {
+            if (e.key === 'Enter') adminLogin();
+        });
+
+        document.getElementById('kasirPassword').addEventListener('keypress', e => {
+            if (e.key === 'Enter') kasirLogin();
+        });
+
+        document.getElementById('customerPhone').addEventListener('keypress', e => {
+            if (e.key === 'Enter') checkVoucher();
+        });
+
+        document.getElementById('phoneInput').addEventListener('keypress', e => {
+            if (e.key === 'Enter') addPhone();
+        });
+
+        document.getElementById('serverPassword').addEventListener('keypress', e => {
+            if (e.key === 'Enter') serverLogin();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9818daf860fdb15c',t:'MTc1ODI4MjUyMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
